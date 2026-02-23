@@ -8,7 +8,7 @@
 
 @layer base {
   body {
-    @apply bg-[#0f172a] text-slate-100 font-sans antialiased overflow-hidden;
+    @apply bg-[#f5f3ff] text-slate-900 font-sans antialiased overflow-hidden;
   }
 }
 
@@ -22,9 +22,9 @@
 }
 
 .glass-panel {
-  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl;
+  @apply bg-white/70 backdrop-blur-md border border-purple-200 rounded-2xl shadow-xl;
 }
 
 .number-block {
-  @apply flex items-center justify-center text-2xl font-bold rounded-lg transition-all duration-200 cursor-pointer select-none;
+  @apply flex items-center justify-center font-bold rounded-sm transition-all duration-200 cursor-pointer select-none;
 }
