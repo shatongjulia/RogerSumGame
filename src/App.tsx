@@ -5,6 +5,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import confetti from 'canvas-confetti';
 import { 
   Play, 
   RotateCcw, 
@@ -46,6 +47,7 @@ export default function App() {
   const [level, setLevel] = useState(1);
   const [timeLeft, setTimeLeft] = useState(TIME_LIMIT);
   const [isPaused, setIsPaused] = useState(false);
+  const [comboCount, setComboCount] = useState(0); // Track eliminations for row addition
 
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -72,6 +74,7 @@ export default function App() {
     setLevel(1);
     setTimeLeft(TIME_LIMIT);
     setSelectedIds([]);
+    setComboCount(0);
     generateNewTarget(newGrid);
   }, []);
 
@@ -80,8 +83,8 @@ export default function App() {
     const flatBlocks = currentGrid.flat().filter(b => b !== null) as BlockData[];
     if (flatBlocks.length === 0) return;
 
-    // Pick 2-4 random blocks to sum up for a realistic target
-    const numToSum = Math.min(flatBlocks.length, Math.floor(Math.random() * 3) + 2);
+    // Pick 2-3 random blocks to sum up for a realistic target (easier)
+    const numToSum = Math.min(flatBlocks.length, Math.floor(Math.random() * 2) + 2);
     const shuffled = [...flatBlocks].sort(() => 0.5 - Math.random());
     const sum = shuffled.slice(0, numToSum).reduce((acc, b) => acc + b.value, 0);
     
@@ -158,6 +161,14 @@ export default function App() {
 
   // Eliminate blocks and handle gravity
   const eliminateBlocks = (ids: string[]) => {
+    // Trigger confetti
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#f43f5e', '#f97316', '#f59e0b', '#10b981', '#6366f1']
+    });
+
     setGrid(prev => {
       const newGrid = prev.map(row => [...row]);
       
@@ -190,7 +201,15 @@ export default function App() {
     setSelectedIds([]);
     
     if (mode === GameMode.CLASSIC) {
-      addNewRow();
+      setComboCount(prev => {
+        const next = prev + 1;
+        // Only add a row every 2 eliminations (easier)
+        if (next >= 2) {
+          addNewRow();
+          return 0;
+        }
+        return next;
+      });
     }
     
     // Generate new target after grid updates
